@@ -16,8 +16,8 @@
     <div id="container" style="width:100%; height:400px;"></div>
 
     <script>
-    // Replace with your actual CSV URL or file path
-    var url = 'https://github.com/Drit92/Higcharts_interactive_chart/auto-mpg.csv';  // Example: 'path/to/your/auto-mpg.csv'
+    // Use the raw GitHub URL for the CSV file
+    var url = 'https://raw.githubusercontent.com/Drit92/Higcharts_interactive_chart/main/auto-mpg.csv';
     
     $.get(url, function(csv) {
         
@@ -44,55 +44,4 @@
                     });
 
                 // Log the processed data points for debugging
-                console.log(dataPoints);  // Check the data points being passed to Highcharts
-                
-                if (dataPoints.length > 0) {
-                    // Create the Highcharts scatter plot if data exists
-                    $('#container').highcharts({
-                        chart: {
-                            type: 'scatter'
-                        },
-
-                        title: {
-                            text: 'Scatter Plot of Car Weights by Model Year'
-                        },
-
-                        xAxis: {
-                            title: {
-                                text: 'Model Year'
-                            },
-                            min: Math.min(...dataPoints.map(p => p.x)), // Set x-axis min and max for better visualization
-                            max: Math.max(...dataPoints.map(p => p.x))
-                        },
-
-                        yAxis: {
-                            title: {
-                                text: 'Weight'
-                            },
-                            min: Math.min(...dataPoints.map(p => p.y)),  // Set y-axis min and max
-                            max: Math.max(...dataPoints.map(p => p.y))
-                        },
-
-                        series: [{
-                            name: 'Car Weights',
-                            data: dataPoints,
-                            tooltip: {
-                                pointFormat: '<b>Weight:</b> {point.y}<br>' +
-                                             '<b>Model Year:</b> {point.x}'
-                            }
-                        }]
-                    });
-                } else {
-                    console.error('No valid data points found!');
-                }
-            },
-            error: function(error) {
-                console.error('Error parsing CSV:', error);
-            }
-        });
-    });
-    </script>
-</body>
-</html>
-
-
+                console.log(dataPoints);  // Chec
