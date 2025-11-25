@@ -19,16 +19,19 @@
     // Use the raw GitHub URL for the CSV file
     var url = 'https://raw.githubusercontent.com/Drit92/Higcharts_interactive_chart/main/auto-mpg.csv';
     
+    console.log("Loading CSV from URL:", url); // Debugging line to check if the URL is correct
+
     $.get(url, function(csv) {
         
+        console.log("CSV Data Loaded:", csv); // Debugging line to check if CSV is loaded
+
         // Parse the CSV data using PapaParse
         Papa.parse(csv, {
             header: true,  // Treat the first row as headers
             dynamicTyping: true,  // Automatically convert data types
             complete: function(results) {
                 
-                // Log parsed CSV data to debug
-                console.log(results.data);  // Check if data is parsed correctly
+                console.log("Parsed CSV Data:", results.data); // Log the parsed CSV data
                 
                 // Extract the model year and weight columns
                 var dataPoints = results.data
@@ -43,5 +46,55 @@
                         };
                     });
 
-                // Log the processed data points for debugging
-                console.log(dataPoints);  // Chec
+                console.log("Processed Data Points:", dataPoints); // Log the processed data points
+
+                if (dataPoints.length > 0) {
+                    // Create the Highcharts scatter plot if data exists
+                    $('#container').highcharts({
+                        chart: {
+                            type: 'scatter'
+                        },
+
+                        title: {
+                            text: 'Scatter Plot of Car Weights by Model Year'
+                        },
+
+                        xAxis: {
+                            title: {
+                                text: 'Model Year'
+                            },
+                            min: Math.min(...dataPoints.map(p => p.x)), // Set x-axis min and max for better visualization
+                            max: Math.max(...dataPoints.map(p => p.x))
+                        },
+
+                        yAxis: {
+                            title: {
+                                text: 'Weight'
+                            },
+                            min: Math.min(...dataPoints.map(p => p.y)),  // Set y-axis min and max
+                            max: Math.max(...dataPoints.map(p => p.y))
+                        },
+
+                        series: [{
+                            name: 'Car Weights',
+                            data: dataPoints,
+                            tooltip: {
+                                pointFormat: '<b>Weight:</b> {point.y}<br>' +
+                                             '<b>Model Year:</b> {point.x}'
+                            }
+                        }]
+                    });
+                } else {
+                    console.error('No valid data points found!');
+                }
+            },
+            error: function(error) {
+                console.error('Error parsing CSV:', error);
+            }
+        });
+    }).fail(function(err) {
+        console.error('Error loading CSV file:', err); // Log if the CSV file fails to load
+    });
+    </script>
+</body>
+</html>
