@@ -14,9 +14,28 @@
     
     <!-- Include PapaParse for CSV parsing -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            align-items: center; /* Vertical centering */
+            justify-content: center; /* Horizontal centering */
+            background: #f8f8f8;
+        }
+        #container {
+            width: 600px;
+            height: 400px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.15);
+            background: #ffffff;
+        }
+    </style>
 </head>
 <body>
-    <div id="container" style="width: 100%; height: 400px;"></div>
+    <div id="container"></div>
 
     <script>
     var url = 'https://raw.githubusercontent.com/Drit92/Higcharts_interactive_chart/main/auto-mpg.csv';
@@ -26,8 +45,6 @@
         header: true,
         dynamicTyping: true,
         complete: function(results) {
-            console.log("Parsed CSV data:", results.data);
-
             var dataPoints = results.data
                 .filter(function(row) {
                     return row['model year'] != null && !isNaN(row['weight']);
@@ -36,14 +53,12 @@
                     return { x: row['model year'], y: row['weight'] };
                 });
 
-            console.log("Processed data points:", dataPoints);
-
             if (dataPoints.length > 0) {
                 var xValues = dataPoints.map(function(p) { return p.x; });
                 var yValues = dataPoints.map(function(p) { return p.y; });
 
                 Highcharts.chart('container', {
-                    chart: { type: 'scatter' },
+                    chart: { type: 'scatter', width: 600, height: 400 },
                     title: { text: 'Scatter Plot of Car Weights by Model Year' },
                     xAxis: {
                         title: { text: 'Model Year' },
