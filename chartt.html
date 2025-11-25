@@ -5,7 +5,7 @@
     <title>Car Weights Scatter Plot</title>
 
     <!-- Load jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     
     <!-- Load Highcharts -->
     <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -16,27 +16,27 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
 </head>
 <body>
+    <h2>If you see this text, HTML is loading.</h2>
     <div id="container" style="width:100%; height:400px;"></div>
 
     <script>
-    // Use the raw GitHub URL for the CSV file
-    var url = 'https://raw.githubusercontent.com/Drit92/Higcharts_interactive_chart/refs/heads/main/auto-mpg.csv';
-    
+    console.log("JS script block started");
+
+    var url = 'auto-mpg.csv';
     console.log("Loading CSV from URL:", url);
 
-    // Let PapaParse download and parse the CSV
     Papa.parse(url, {
         download: true,
-        header: true,          // First row as headers
-        dynamicTyping: true,   // Auto-convert types
+        header: true,
+        dynamicTyping: true,
         complete: function(results) {
             console.log("Parsed CSV Data:", results.data);
 
-            // Extract the model year and weight columns
             var dataPoints = results.data
                 .filter(function(row) {
-                    // Adjust these keys if your headers differ
-                    return row['model year'] != null && row['weight'] != null && !isNaN(row['weight']);
+                    return row['model year'] != null &&
+                           row['weight'] != null &&
+                           !isNaN(row['weight']);
                 })
                 .map(function(row) {
                     return {
@@ -52,36 +52,25 @@
                 var yValues = dataPoints.map(function(p) { return p.y; });
 
                 Highcharts.chart('container', {
-                    chart: {
-                        type: 'scatter'
-                    },
-
-                    title: {
-                        text: 'Scatter Plot of Car Weights by Model Year'
-                    },
-
+                    chart: { type: 'scatter' },
+                    title: { text: 'Scatter Plot of Car Weights by Model Year' },
                     xAxis: {
-                        title: {
-                            text: 'Model Year'
-                        },
+                        title: { text: 'Model Year' },
                         min: Math.min.apply(null, xValues),
                         max: Math.max.apply(null, xValues)
                     },
-
                     yAxis: {
-                        title: {
-                            text: 'Weight'
-                        },
+                        title: { text: 'Weight' },
                         min: Math.min.apply(null, yValues),
                         max: Math.max.apply(null, yValues)
                     },
-
                     series: [{
                         name: 'Car Weights',
                         data: dataPoints,
                         tooltip: {
-                            pointFormat: '<b>Weight:</b> {point.y}<br>' +
-                                         '<b>Model Year:</b> {point.x}'
+                            pointFormat:
+                                '<b>Weight:</b> {point.y}<br>' +
+                                '<b>Model Year:</b> {point.x}'
                         }
                     }]
                 });
@@ -96,4 +85,3 @@
     </script>
 </body>
 </html>
-
