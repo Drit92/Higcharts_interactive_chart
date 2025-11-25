@@ -1,87 +1,91 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta charset="UTF-8" />
-<title>Fixed Size Chart Centered</title>
-<style>
-  html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    align-items: center; /* centers vertically */
-    justify-content: center; /* centers horizontally */
-    background-color: #f0f0f0; /* optional background */
-  }
-  #container {
-    width: 700px; 
-    height: 500px; /* increased height */
-    /* optional: add some box shadow for visual enhancement */
-    box-shadow: 0 0 20px rgba(0,0,0,0.2);
-  }
-</style>
+    <meta charset="UTF-8" />
+    <title>Car Weights Scatter Plot</title>
+
+    <!-- Load jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    
+    <!-- Load Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/boxplot.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    
+    <!-- Include PapaParse for CSV parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            align-items: center; /* Vertical centering */
+            justify-content: center; /* Horizontal centering */
+            background: #f8f8f8;
+        }
+        #container {
+            width: 600px;
+            height: 400px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.15);
+            background: #ffffff;
+        }
+    </style>
 </head>
 <body>
+    <div id="container"></div>
 
-<div id="container"></div>
+    <script>
+    var url = 'https://raw.githubusercontent.com/Drit92/Higcharts_interactive_chart/main/auto-mpg.csv';
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/boxplot.js"></script>
-<script src="https://code.highcharts.com/modules/data.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    Papa.parse(url, {
+        download: true,
+        header: true,
+        dynamicTyping: true,
+        complete: function(results) {
+            var dataPoints = results.data
+                .filter(function(row) {
+                    return row['model year'] != null && !isNaN(row['weight']);
+                })
+                .map(function(row) {
+                    return { x: row['model year'], y: row['weight'] };
+                });
 
-<script>
-var url = 'https://raw.githubusercontent.com/Drit92/Higcharts_interactive_chart/main/auto-mpg.csv';
+            if (dataPoints.length > 0) {
+                var xValues = dataPoints.map(function(p) { return p.x; });
+                var yValues = dataPoints.map(function(p) { return p.y; });
 
-Papa.parse(url, {
-  download: true,
-  header: true,
-  dynamicTyping: true,
-  complete: function(results) {
-    var dataPoints = results.data
-      .filter(function(row) {
-        return row['model year'] != null && !isNaN(row['weight']);
-      })
-      .map(function(row) {
-        return { x: row['model year'], y: row['weight'] };
-      });
-    if (dataPoints.length > 0) {
-      var xValues = dataPoints.map(function(p) { return p.x; });
-      var yValues = dataPoints.map(function(p) { return p.y; });
-      Highcharts.chart('container', {
-        chart: {
-          type: 'scatter',
-          height: 500,
-          spacingLeft: 50,
-          spacingRight: 50,
-          spacingTop: 50,
-          spacingBottom: 50
+                Highcharts.chart('container', {
+                    chart: { type: 'scatter', width: 600, height: 400 },
+                    title: { text: 'Scatter Plot of Car Weights by Model Year' },
+                    xAxis: {
+                        title: { text: 'Model Year' },
+                        min: Math.min.apply(null, xValues),
+                        max: Math.max.apply(null, xValues)
+                    },
+                    yAxis: {
+                        title: { text: 'Weight' },
+                        min: Math.min.apply(null, yValues),
+                        max: Math.max.apply(null, yValues)
+                    },
+                    series: [{
+                        name: 'Car Weights',
+                        data: dataPoints,
+                        tooltip: {
+                            pointFormat: '<b>Weight:</b> {point.y}<br><b>Model Year:</b> {point.x}'
+                        }
+                    }]
+                });
+            } else {
+                console.error('No valid data points found!');
+            }
         },
-        title: {
-          text: 'Scatter Plot of Car Weights by Model Year'
-        },
-        xAxis: {
-          title: { text: 'Model Year' },
-          min: Math.min.apply(null, xValues),
-          max: Math.max.apply(null, xValues)
-        },
-        yAxis: {
-          title: { text: 'Weight' },
-          min: Math.min.apply(null, yValues),
-          max: Math.max.apply(null, yValues)
-        },
-        series: [{
-          name: 'Car Weights',
-          data: dataPoints,
-          tooltip: {
-            pointFormat: '<b>Weight:</b> {point.y}<br><b>Model Year:</b> {point.x}'
-          }
-        }]
-      });
-    }
-  }
-});
-</script>
-
+        error: function(err) {
+            console.error('Error loading or parsing CSV:', err);
+        }
+    });
+    </script>
 </body>
 </html>
